@@ -60,8 +60,9 @@ export default function AddProduct() {
       }
     });
     console.log('Image previews:', previews);
-    setImagePreviews(previews);
+    setImagePreviews([...previews]); // force new array to trigger rerender
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,20 +90,61 @@ export default function AddProduct() {
     }
     // 2. Send product data (with Cloudinary URLs) to backend
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/admin/products';
+      // Map frontend fields to backend model
+      const payload = {
+        name: form.name,
+        shop: form.shop, // must be ObjectId string
+        category: form.category, // must be ObjectId string
+        subCategory: form.subCategory, // must be ObjectId string
+        brand: form.brand, // must be ObjectId string
+        size: form.size,
+        color: form.color,
+        gender: form.gender,
+        status: form.status,
+        code: form.productCode,
+        sku: form.productSku,
+        tags: form.tags.split(',').map(t => t.trim()),
+        metaTitle: form.metaTitle,
+        description: form.description,
+        slug: form.slug,
+        metaDescription: form.metaDescription,
+        quantity: form.quantity,
+        price: form.regularPrice,
+        priceSale: form.salePrice,
+        isFeatured: form.featured,
+        images: uploadedImages,
+      };
       await http.post(
-        apiUrl,
-        {
-          ...form,
-          images: uploadedImages,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            // Authorization header is handled globally in http.js
-          },
-        }
+        '/admin/products',
+        payload
       );
+      // Reset form and images
+      setForm({
+        name: '',
+        shop: '',
+        category: '',
+        subCategory: '',
+        brand: '',
+        size: '',
+        color: '',
+        gender: '',
+        status: 'Sale',
+        productCode: '',
+        productSku: '',
+        tags: '',
+        metaTitle: '',
+        description: '',
+        slug: '',
+        metaDescription: '',
+        quantity: '',
+        regularPrice: '',
+        salePrice: '',
+        featured: false,
+      });
+      setImages([]);
+      setImagePreviews([]);
+      // Show success feedback
+      alert('Product added successfully!');
       router.push('/admin/products');
     } catch (err) {
       alert('Product creation failed: ' + (err.response?.data?.message || err.message));
@@ -203,55 +245,55 @@ export default function AddProduct() {
                   <TextField label="Meta Title" name="metaTitle" value={form.metaTitle} onChange={handleChange} fullWidth margin="normal" />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField label="Description" name="description" value={form.description} onChange={handleChange} fullWidth margin="normal" multiline minRows={3} />
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 3,
+                      my: 3,
+                      border: '2px dashed #333',
+                      background: '#181818',
+                      color: '#aaa',
+                      textAlign: 'center',
+                      minHeight: 180,
+                      boxShadow: 'none',
+                      borderRadius: 2,
+                      borderColor: '#444',
+                      cursor: 'pointer',
+                      transition: 'border-color 0.2s',
+                      '&:hover': { borderColor: '#666' },
+                    }}
+                  >
+                    <Typography variant="subtitle2" mb={1}>
+                      Product Images <span style={{ fontSize: 12, color: '#aaa' }}>(*1024 × 1024)</span>
+                    </Typography>
+                    <label htmlFor="product-images-upload" style={{ cursor: 'pointer', display: 'block' }}>
+                      {imagePreviews.length > 0 ? (
+                        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+                          {imagePreviews.map((src, idx) => (
+                            <img key={idx} src={src} alt={`Preview ${idx + 1}`} style={{ maxWidth: 100, maxHeight: 100, margin: '0 auto', borderRadius: 6, border: '1px solid #222' }} />
+                          ))}
+                        </Box>
+                      ) : (
+                        <Box sx={{ color: '#bbb', fontSize: 16, py: 3 }}>
+                          <Box sx={{ mb: 1 }}>Drop or Select Images</Box>
+                          <Box>
+                            <img src="/icons/upload.svg" alt="upload" width={48} height={48} style={{ marginTop: 8, opacity: 0.7 }} />
+                          </Box>
+                          <Box sx={{ mt: 2, color: 'red', fontSize: 12 }}>DEBUG: imagePreviews = {JSON.stringify(imagePreviews)}</Box>
+                        </Box>
+                      )}
+                      <input
+                        id="product-images-upload"
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        multiple
+                        onChange={handleImageChange}
+                      />
+                    </label>
+                  </Paper>
                 </Grid>
               </Grid>
-              <Paper
-                variant="outlined"
-                sx={{
-                  p: 3,
-                  my: 3,
-                  border: '2px dashed #333',
-                  background: '#181818',
-                  color: '#aaa',
-                  textAlign: 'center',
-                  minHeight: 180,
-                  boxShadow: 'none',
-                  borderRadius: 2,
-                  borderColor: '#444',
-                  cursor: 'pointer',
-                  transition: 'border-color 0.2s',
-                  '&:hover': { borderColor: '#666' },
-                }}
-              >
-                <Typography variant="subtitle2" mb={1}>
-                  Product Images <span style={{ fontSize: 12, color: '#aaa' }}>(*1024 × 1024)</span>
-                </Typography>
-                <label htmlFor="product-images-upload" style={{ cursor: 'pointer', display: 'block' }}>
-                  {imagePreviews.length > 0 ? (
-                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-                      {imagePreviews.map((src, idx) => (
-                        <img key={idx} src={src} alt={`Preview ${idx + 1}`} style={{ maxWidth: 100, maxHeight: 100, margin: '0 auto', borderRadius: 6, border: '1px solid #222' }} />
-                      ))}
-                    </Box>
-                  ) : (
-                    <Box sx={{ color: '#bbb', fontSize: 16, py: 3 }}>
-                      <Box sx={{ mb: 1 }}>Drop or Select Images</Box>
-                      <Box>
-                        <img src="/icons/upload.svg" alt="upload" width={48} height={48} style={{ marginTop: 8, opacity: 0.7 }} />
-                      </Box>
-                    </Box>
-                  )}
-                  <input
-                    id="product-images-upload"
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    multiple
-                    onChange={handleImageChange}
-                  />
-                </label>
-              </Paper>
               <Box sx={{ textAlign: 'right', mt: 3 }}>
                 <Button type="submit" variant="contained" color="primary" fullWidth sx={{ py: 1.5, fontWeight: 600 }}>
                   Create Product
@@ -273,9 +315,8 @@ export default function AddProduct() {
             </Box>
           </Paper>
         </Grid>
-        {/* Images Upload Section */}
-        
       </Grid>
     </Box>
   );
 }
+

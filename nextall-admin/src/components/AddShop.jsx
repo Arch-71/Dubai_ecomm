@@ -36,6 +36,7 @@ export default function AddShop() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+<<<<<<< HEAD
   const handleImageChange = async (e, type) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
@@ -44,12 +45,19 @@ export default function AddShop() {
         return;
       }
       // Show local preview immediately
+=======
+  const handleImageChange = (e, type) => {
+    const file = e.target.files[0];
+    if (file) {
+      setForm((prev) => ({ ...prev, [type]: file }));
+>>>>>>> 88f2aaf8964e11f1dcce8b49100ac8ea051454d9
       const reader = new FileReader();
       reader.onload = (ev) => {
         if (type === 'logo') setLogoPreview(ev.target.result);
         if (type === 'cover') setCoverPreview(ev.target.result);
       };
       reader.readAsDataURL(file);
+<<<<<<< HEAD
 
       // Upload to Cloudinary
       const data = new FormData();
@@ -73,11 +81,14 @@ export default function AddShop() {
       if (type === 'logo') setLogoPreview(null);
       if (type === 'cover') setCoverPreview(null);
       setForm((prev) => ({ ...prev, [type]: null }));
+=======
+>>>>>>> 88f2aaf8964e11f1dcce8b49100ac8ea051454d9
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
     // Validate logo and cover are uploaded
     if (!form.logo || !form.logo.url || !form.cover || !form.cover.url) {
       alert('Please upload both logo and cover images.');
@@ -85,6 +96,23 @@ export default function AddShop() {
     }
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/admin/shops';
     await http.post(apiUrl, form);
+=======
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      if (value) formData.append(key, value);
+    });
+    
+    await http.post(
+      '/admin/shops',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          // Authorization header is handled globally in http.js
+        },
+      }
+    );
+>>>>>>> 88f2aaf8964e11f1dcce8b49100ac8ea051454d9
     router.push('/admin/shops');
   };
 
