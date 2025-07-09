@@ -73,9 +73,7 @@ export default function AddShop() {
           ...prev,
           [type]: { _id: cloudinary.public_id, url: cloudinary.secure_url }
         }));
-        // Set preview from uploaded url immediately
-        if (type === 'logo') setLogoPreview(cloudinary.secure_url);
-        if (type === 'cover') setCoverPreview(cloudinary.secure_url);
+        // No direct setLogoPreview/setCoverPreview here; let useEffect handle it
       } else {
         alert('Image upload failed');
       }
