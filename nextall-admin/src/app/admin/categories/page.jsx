@@ -51,7 +51,7 @@ export default function CategoriesPage() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this category?')) return;
     try {
-      await http.delete(`/admin/categories/${id}`);
+      await http.delete(`/admin/categories/id/${id}`);
       setCategories(prev => prev.filter(category => category._id !== id));
     } catch (err) {
       alert('Failed to delete category: ' + (err?.response?.data?.message || err.message));

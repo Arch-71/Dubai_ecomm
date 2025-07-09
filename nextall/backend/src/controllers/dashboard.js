@@ -83,7 +83,9 @@ const getDashboardAnalytics = async (req, res) => {
 
     const totalUsers = await User.countDocuments({
       role: 'user',
+      
     }).select('createdAt');
+    console.log('Total users:', totalUsers);
     const totalVendors = await User.countDocuments({
       role: 'vendor',
     });

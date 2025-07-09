@@ -1,11 +1,29 @@
 import React from 'react';
 // components
-import ProductForm from 'src/components/forms/product';
+import React, { useState } from 'react';
+import ShopForm from 'src/components/forms/ShopForm';
+import toast from 'react-hot-toast';
+import * as api from 'src/services';
 
-export default function addProduct({ brands, categories, subCategories, isVendor }) {
+export default function AddShop() {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (fields) => {
+    setLoading(true);
+    try {
+      await api.addAdminShopByAdmin(fields);
+      toast.success('Shop added successfully!');
+      // Optionally reset or redirect here
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to add shop');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
-      <ProductForm brands={brands} categories={categories} subCategories={subCategories} isVendor={isVendor} />
+      <ShopForm onSubmit={handleSubmit} isLoading={loading} />
     </div>
   );
 }

@@ -856,9 +856,25 @@ const getProductsByAdmin = async (request, response) => {
 };
 const createProductByAdmin = async (req, res) => {
   try {
-    const admin = await getAdmin(req, res);
+    const user = req.user;
+    if (!user || !user.role || !user._id) {
+      return res.status(401).json({ success: false, message: 'Unauthorized: Missing user info' });
+    }
 
     const { images, ...body } = req.body;
+    let shop = null;
+    let vendorId = user._id;
+
+    // If vendor, check shop approval
+    if (user.role === 'vendor') {
+      shop = await Shop.findOne({ vendor: user._id.toString() });
+      if (!shop) {
+        return res.status(404).json({ success: false, message: 'Shop not found' });
+      }
+      if (shop.status !== 'approved') {
+        return res.status(400).json({ success: false, message: 'No Action Before You’re Approved' });
+      }
+    }
 
     const updatedImages = await Promise.all(
       images.map(async (image) => {
@@ -866,17 +882,34 @@ const createProductByAdmin = async (req, res) => {
         return { ...image, blurDataURL };
       })
     );
-    const data = await Product.create({
-      vendor: admin._id,
+
+    // Compose product data
+    const productData = {
       ...body,
       images: updatedImages,
       likes: 0,
-    });
-    await Shop.findByIdAndUpdate(req.body.shop, {
-      $addToSet: {
-        products: data._id,
-      },
-    });
+    };
+    // Assign vendor/admin field
+    if (user.role === 'admin' || user.role === 'super admin') {
+      productData.vendor = user._id;
+      if (body.shop) {
+        shop = await Shop.findById(body.shop);
+      }
+    } else if (user.role === 'vendor') {
+      productData.vendor = user._id;
+      productData.shop = shop._id;
+    } else {
+      return res.status(403).json({ success: false, message: 'Forbidden: Only admin or vendor can add products' });
+    }
+
+    const data = await Product.create(productData);
+    if (shop) {
+      await Shop.findByIdAndUpdate(shop._id.toString(), {
+        $addToSet: {
+          products: data._id,
+        },
+      });
+    }
     res.status(201).json({
       success: true,
       message: 'Product Created',

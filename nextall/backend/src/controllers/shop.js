@@ -52,7 +52,7 @@ const getShopsByAdmin = async (req, res) => {
 const createShopByAdmin = async (req, res) => {
   try {
     const admin = await getAdmin(req, res);
-    let { logo, cover, ...others } = req.body;
+    let { logo, cover, ...others } = req.body; // No vendorId, admin is always the vendor.
     // If logo/cover are strings (from JSON), parse them
     if (typeof logo === 'string') logo = JSON.parse(logo);
     if (typeof cover === 'string') cover = JSON.parse(cover);
@@ -66,8 +66,9 @@ const createShopByAdmin = async (req, res) => {
     const logoBlurDataURL = await getBlurDataURL(logo.url);
     const coverBlurDataURL = await getBlurDataURL(cover.url);
 
+    // Create shop with admin as owner (no vendor logic)
     const shop = await Shop.create({
-      vendor: admin._id.toString(),
+      vendor: admin._id,
       ...others,
       logo: {
         ...logo,
@@ -309,7 +310,7 @@ const createShopByUser = async (req, res) => {
     //       ...logo,
     //       blurDataURL: logoBlurDataURL,
     //     },
-    //     cover: {
+    //     cover: 
     //       ...cover,
     //       blurDataURL: coverBlurDataURL,
     //     },

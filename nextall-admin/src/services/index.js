@@ -60,8 +60,8 @@ export const updateBrandByAdmin = async ({ currentSlug, ...payload }) => {
   const { data } = await http.put(`/admin/brands/${currentSlug}`, payload);
   return data;
 };
-export const deleteBrandByAdmin = async (slug) => {
-  const { data } = await http.delete(`/admin/brands/${slug}`);
+export const deleteBrandByAdmin = async (_id) => {
+  const { data } = await http.delete(`/brands/id/${_id}`);
   return data;
 };
 
@@ -73,8 +73,8 @@ export const getCategoryByAdmin = async (slug) => {
   const { data } = await http.get(`/admin/categories/${slug}`);
   return data;
 };
-export const deleteCategoryByAdmin = async (slug) => {
-  const { data } = await http.delete(`/admin/categories/${slug}`);
+export const deleteCategoryByAdmin = async (_id) => {
+  const { data } = await http.delete(`/admin/categories/id/${_id}`);
   return data;
 };
 export const addCategoryByAdmin = async (payload) => {
@@ -116,7 +116,9 @@ export const getProductsByAdmin = async (params) => {
   return response;
 };
 export const createProductByAdmin = async (payload) => {
-  const { data: response } = await http.post(`/admin/products`, payload);
+  // Remove vendorId from payload if present
+  const { vendorId, ...payloadWithoutVendor } = payload;
+  const { data: response } = await http.post(`/products`, payloadWithoutVendor);
   return response;
 };
 export const updateProductByAdmin = async ({ currentSlug, ...payload }) => {

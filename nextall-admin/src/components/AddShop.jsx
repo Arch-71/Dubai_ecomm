@@ -29,6 +29,14 @@ export default function AddShop() {
   });
   const [logoPreview, setLogoPreview] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
+
+  // Always sync preview with form state (for editing or after upload)
+  React.useEffect(() => {
+    if (form.logo && form.logo.url) setLogoPreview(form.logo.url);
+    else setLogoPreview(null);
+    if (form.cover && form.cover.url) setCoverPreview(form.cover.url);
+    else setCoverPreview(null);
+  }, [form.logo, form.cover]);
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -36,7 +44,6 @@ export default function AddShop() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-<<<<<<< HEAD
   const handleImageChange = async (e, type) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
@@ -45,19 +52,12 @@ export default function AddShop() {
         return;
       }
       // Show local preview immediately
-=======
-  const handleImageChange = (e, type) => {
-    const file = e.target.files[0];
-    if (file) {
-      setForm((prev) => ({ ...prev, [type]: file }));
->>>>>>> 88f2aaf8964e11f1dcce8b49100ac8ea051454d9
       const reader = new FileReader();
       reader.onload = (ev) => {
         if (type === 'logo') setLogoPreview(ev.target.result);
         if (type === 'cover') setCoverPreview(ev.target.result);
       };
       reader.readAsDataURL(file);
-<<<<<<< HEAD
 
       // Upload to Cloudinary
       const data = new FormData();
@@ -73,6 +73,9 @@ export default function AddShop() {
           ...prev,
           [type]: { _id: cloudinary.public_id, url: cloudinary.secure_url }
         }));
+        // Set preview from uploaded url immediately
+        if (type === 'logo') setLogoPreview(cloudinary.secure_url);
+        if (type === 'cover') setCoverPreview(cloudinary.secure_url);
       } else {
         alert('Image upload failed');
       }
@@ -81,38 +84,25 @@ export default function AddShop() {
       if (type === 'logo') setLogoPreview(null);
       if (type === 'cover') setCoverPreview(null);
       setForm((prev) => ({ ...prev, [type]: null }));
-=======
->>>>>>> 88f2aaf8964e11f1dcce8b49100ac8ea051454d9
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-<<<<<<< HEAD
     // Validate logo and cover are uploaded
     if (!form.logo || !form.logo.url || !form.cover || !form.cover.url) {
       alert('Please upload both logo and cover images.');
       return;
     }
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/admin/shops';
-    await http.post(apiUrl, form);
-=======
-    const formData = new FormData();
-    Object.entries(form).forEach(([key, value]) => {
-      if (value) formData.append(key, value);
+    // Remove vendorId from payload if present
+    const { vendorId, ...formWithoutVendor } = form;
+    const token = localStorage.getItem('token');
+    await http.post(apiUrl, formWithoutVendor, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-    
-    await http.post(
-      '/admin/shops',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          // Authorization header is handled globally in http.js
-        },
-      }
-    );
->>>>>>> 88f2aaf8964e11f1dcce8b49100ac8ea051454d9
     router.push('/admin/shops');
   };
 

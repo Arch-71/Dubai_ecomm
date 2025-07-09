@@ -164,26 +164,46 @@ const updateCategoryBySlug = async (req, res) => {
   }
 };
 
-const deleteCategoryBySlug = async (req, res) => {
+const deleteCategoryById = async (req, res) => {
   try {
-    const { slug } = req.params;
-
-    const category = await Categories.findOneAndDelete({ slug });
-    const dataaa = await singleFileDelete(category.cover._id);
+    const { id } = req.params;
+    const category = await Categories.findByIdAndDelete(id);
     if (!category) {
       return res.status(400).json({
         success: false,
         message: 'Category Not Found',
       });
     }
-
-    res
-      .status(201)
-      .json({ success: true, message: 'Category Deleted Successfully' });
+    if (category.cover && category.cover._id) {
+      await singleFileDelete(category.cover._id);
+    }
+    res.status(201).json({ success: true, message: 'Category Deleted Successfully' });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+const deleteCategoryBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const category = await Categories.findOneAndDelete({ slug });
+    if (!category) {
+      return res.status(400).json({
+        success: false,
+        message: 'Category Not Found',
+      });
+    }
+    if (category.cover && category.cover._id) {
+      await singleFileDelete(category.cover._id);
+    }
+    res.status(201).json({ success: true, message: 'Category Deleted Successfully' });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// Existing deleteCategory (by slug or id in body) remains for backward compatibility
+
 const getCategories = async (req, res) => {
   try {
     const { limit = 10, page = 1, search = '' } = req.query;
@@ -261,6 +281,7 @@ module.exports = {
   getCategoryBySlug,
   updateCategoryBySlug,
   deleteCategoryBySlug,
+  deleteCategoryById,
   getCategoriesSlugs,
   getSubCategoriesSlugs,
   getCategoryByAdmin,

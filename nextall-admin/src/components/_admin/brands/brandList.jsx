@@ -9,7 +9,7 @@ import { useQuery } from 'react-query';
 // mui
 import { Dialog } from '@mui/material';
 // components
-import DeleteDialog from 'src/components/dialog/delete';
+import DeleteDialog from 'src/components/dialog/DeleteDialog';
 import Table from 'src/components/table/table';
 import Brand from 'src/components/table/rows/brand';
 
@@ -37,8 +37,8 @@ export default function BrandList() {
     }
   );
 
-  const handleClickOpen = (prop) => () => {
-    setId(prop);
+  const handleClickOpen = (brand) => () => {
+    setId(brand._id); // Always pass only the _id
     setOpen(true);
   };
   const handleClose = () => {

@@ -16,6 +16,7 @@ router.get('/brands/:slug', verifyToken, brand.getBrandBySlug);
 router.put('/brands/:slug', verifyToken, brand.updateBrandBySlug);
 
 router.delete('/brands/:slug', verifyToken, brand.deleteBrandBySlug);
+router.delete('/brands/id/:id', verifyToken, brand.deleteBrandById);
 
 router.get('/all-brands', brand.getAllBrands);
 

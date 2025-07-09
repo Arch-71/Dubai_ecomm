@@ -28,6 +28,13 @@ router.delete(
   verifyToken,
   categories.deleteCategoryBySlug
 );
+
+// New: Delete by _id
+router.delete(
+  '/categories/id/:id',
+  verifyToken,
+  categories.deleteCategoryById
+);
 router.get('/categories/all', verifyToken, categories.getCategories);
 router.get('/admin/all-categories', categories.getCategoriesByAdmin);
 

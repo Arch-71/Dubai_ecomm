@@ -17,12 +17,12 @@ router.put(
 );
 // router.post("/admin/users/:uid", verifyToken, userController.getUserByAdmin);
 // router.post("/admin/users/role/:uid", verifyToken, userController.updateRole)
-router.get("/admin/users", verifyToken, adminController.getUsersByAdmin);
+router.get("/users", verifyToken, adminController.getUsersByAdmin);
 
-router.get("/admin/users/:id", verifyToken, adminController.getOrdersByUid);
+router.get("/users/:id", verifyToken, adminController.getOrdersByUid);
 
 router.post(
-	"/admin/users/role/:id",
+	"/users/role/:id",
 	verifyToken,
 	adminController.UpdateRoleByAdmin
 );

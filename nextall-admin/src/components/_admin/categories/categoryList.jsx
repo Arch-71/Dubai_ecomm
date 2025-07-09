@@ -9,7 +9,7 @@ import { useQuery } from 'react-query';
 // mui
 import { Dialog } from '@mui/material';
 // components
-import DeleteDialog from 'src/components/dialog/delete';
+import DeleteDialog from 'src/components/dialog/DeleteDialog';
 import Table from 'src/components/table/table';
 import Category from 'src/components/table/rows/category';
 
@@ -37,8 +37,8 @@ export default function CategoryList() {
     }
   );
 
-  const handleClickOpen = (prop) => () => {
-    setId(prop);
+  const handleClickOpen = (category) => () => {
+    setId(category._id); 
     setOpen(true);
   };
   const handleClose = () => {

@@ -136,11 +136,29 @@ const getBrands = async (req, res) => {
   }
 };
 
+const deleteBrandById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const brand = await Brands.findByIdAndDelete(id);
+    if (!brand) {
+      return res.status(404).json({ message: 'Brand Not Found' });
+    }
+    // Delete logo file if present
+    if (brand.logo && brand.logo._id) {
+      await singleFileDelete(brand.logo._id);
+    }
+    res.status(201).json({ success: true, message: 'Brand Deleted' });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createBrand,
   getAllBrands,
   getBrandBySlug,
   updateBrandBySlug,
   deleteBrandBySlug,
+  deleteBrandById,
   getBrands,
 };

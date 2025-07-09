@@ -9,11 +9,11 @@ export async function GET() {
     }
     const data = await res.json();
     if (data.success) {
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       return NextResponse.json({
-        products: data.data.bestSellingProducts.map(product => ({
-          name: product.name,
-          image: product.images?.[0]?.url || '',
-          sold: product.sold,
+        sales: data.data.salesReport.map((value, i) => ({
+          month: months[i],
+          value,
         })),
       });
     } else {
@@ -22,4 +22,4 @@ export async function GET() {
   } catch (err) {
     return NextResponse.json({ error: err.message || 'Unknown error' }, { status: 500 });
   }
-}
+} 
