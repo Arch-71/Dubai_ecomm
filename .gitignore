@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.local
+nextall-admin/.next
+nextall-admin/.vercel
+nextall-admin/nextall-backend/.next
+nextall-admin/nextall-backend/.vercel
+nextall-admin/nextall-backend/node_modules
+
