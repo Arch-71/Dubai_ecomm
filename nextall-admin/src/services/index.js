@@ -61,7 +61,7 @@ export const updateBrandByAdmin = async ({ currentSlug, ...payload }) => {
   return data;
 };
 export const deleteBrandByAdmin = async (_id) => {
-  const { data } = await http.delete(`/brands/id/${_id}`);
+  const { data } = await http.delete(`/admin/brands/id/${_id}`);
   return data;
 };
 

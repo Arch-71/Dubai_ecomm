@@ -96,38 +96,47 @@ const registerUser = async (req, res) => {
 };
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = await req.body;
+    const { email, password, isAdmin } = req.body;
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'User Not Found' });
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User Not Found' 
+      });
+    }
+
+    // Check if user is trying to access admin panel
+    if (isAdmin && !['admin', 'super admin'].includes(user.role)) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied. Admin privileges required.' 
+      });
     }
 
     if (!user.password) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'User Password Not Found' });
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User Password Not Found' 
+      });
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
-
     if (!isPasswordMatch) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Incorrect Password' });
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Incorrect Password' 
+      });
     }
 
     const token = jwt.sign(
       {
         _id: user._id,
         email: user.email,
+        role: user.role // Include role in the token
       },
       process.env.JWT_SECRET,
-      {
-        expiresIn: '7d',
-      }
+      { expiresIn: '7d' }
     );
 
     const products = await Products.aggregate([

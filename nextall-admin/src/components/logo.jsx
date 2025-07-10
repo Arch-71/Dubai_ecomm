@@ -12,9 +12,10 @@ export default function Logo() {
         color: 'primary.main',
         textDecoration: 'none',
         cursor: 'pointer',
+        fontSize: '1.1rem'
       }}
     >
-      NextAll Admin
+      Sacred Mayhem Admin Dashboard
     </Typography>
   );
-} 
+}

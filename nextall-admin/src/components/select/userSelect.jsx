@@ -21,8 +21,16 @@ export default function UserSelect() {
   };
 
   const handleLogout = () => {
+    // Clear local storage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Dispatch logout action
     dispatch(logout());
-    router.push('/auth/login');
+    
+    // Redirect to main site login page
+    window.location.href = 'http://localhost:3001/login';
+    
     handleClose();
   };
 
