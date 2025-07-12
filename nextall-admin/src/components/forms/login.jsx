@@ -30,7 +30,10 @@ export default function LoginForm() {
   const { mutate } = useMutation(api.login, {
     onSuccess: async (data) => {
       // Store token and user in localStorage
-      localStorage.setItem('token', data.token);
+      console.log('LOGIN RESPONSE:', data);
+      // IMPORTANT: Make sure 'data.token' matches the property name returned by your backend (e.g., data.token, data.jwt, etc.)
+localStorage.setItem('token', data.jwt); // Update 'data.token' if your backend uses a different property
+
       if (data.user) {
         localStorage.setItem('user', JSON.stringify(data.user));
       }

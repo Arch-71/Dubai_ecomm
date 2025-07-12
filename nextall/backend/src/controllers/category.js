@@ -3,7 +3,7 @@ const Categories = require('../models/Category');
 const SubCategories = require('../models/SubCategory');
 const { singleFileDelete } = require('../config/uploader');
 const getBlurDataURL = require('../config/getBlurDataURL');
-
+const cloudinary = require('../config/cloudinary');
 const { singleFileUploader } = require('../config/uploader');
 
 const createCategory = async (req, res) => {

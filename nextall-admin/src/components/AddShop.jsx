@@ -96,12 +96,21 @@ export default function AddShop() {
     // Remove vendorId from payload if present
     const { vendorId, ...formWithoutVendor } = form;
     const token = localStorage.getItem('token');
-    await http.post(apiUrl, formWithoutVendor, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    router.push('/admin/shops');
+    try {
+      await http.post(apiUrl, formWithoutVendor, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      router.push('/admin/shops');
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        alert('Error: ' + error.response.data.message);
+      } else {
+        alert('An error occurred while adding the shop.');
+      }
+      console.error('Add Shop Error:', error);
+    }
   };
 
   return (

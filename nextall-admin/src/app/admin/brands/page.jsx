@@ -61,7 +61,7 @@ export default function BrandsPage() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this brand?')) return;
     try {
-      await http.delete(`/admin/brands/${id}`);
+      await http.delete(`/admin/brands/id/${id}`);
       setBrands(prev => prev.filter(brand => brand._id !== id));
     } catch (err) {
       alert('Failed to delete brand: ' + (err?.response?.data?.message || err.message));
@@ -111,7 +111,7 @@ export default function BrandsPage() {
 >
 
                   <TableCell>Brand</TableCell>
-                  <TableCell align="center">Products</TableCell>
+                  <TableCell align="center">Description</TableCell>
                   <TableCell align="center">Featured</TableCell>
                   <TableCell align="center">Status</TableCell>
                   <TableCell align="right">Actions</TableCell>
@@ -132,7 +132,7 @@ export default function BrandsPage() {
           <Typography variant="subtitle2">{brand.name}</Typography>
         </Box>
       </TableCell>
-      <TableCell align="center">{brand.products}</TableCell>
+      <TableCell align="center">{brand.description}</TableCell>
       <TableCell align="center">
         <Switch
           checked={brand.featured}

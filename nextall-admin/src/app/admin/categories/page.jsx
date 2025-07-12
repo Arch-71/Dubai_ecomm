@@ -96,7 +96,7 @@ export default function CategoriesPage() {
 
                   <TableCell>Name</TableCell>
                   <TableCell>Slug</TableCell>
-                  <TableCell align="center">Products</TableCell>
+                  <TableCell align="center">Description</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -106,7 +106,7 @@ export default function CategoriesPage() {
     <TableRow key={category._id}>
       <TableCell>{category.name}</TableCell>
       <TableCell>{category.slug}</TableCell>
-      <TableCell align="center">{category.products}</TableCell>
+      <TableCell align="center">{category.description}</TableCell>
       <TableCell align="right">
         <Tooltip title="Edit">
           <IconButton onClick={() => handleEdit(category.slug)}>

@@ -19,23 +19,21 @@ import {
   Zap,
   Crown,
   Flame,
+  Shield
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
 export default function HomePage() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
   const [isMuted, setIsMuted] = useState(true)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll()
   const y = useTransform(scrollYProgress, [0, 1], [0, -50])
-
-  if (!mounted) return null;
 
   const heroSlides = [
     {
@@ -134,19 +132,53 @@ export default function HomePage() {
     },
   ]
 
+  useEffect(() => {
+    setIsLoaded(true)
+    // Check authentication only on client
+    if (typeof window !== "undefined") {
+      setIsAuthenticated(!!localStorage.getItem("token"))
+    }
+    const interval = setInterval(() => {
+      if (isPlaying) {
+        setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
+      }
+    }, 6000)
+    return () => clearInterval(interval)
+  }, [isPlaying, heroSlides.length])
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+    window.addEventListener("mousemove", handleMouseMove)
+    return () => window.removeEventListener("mousemove", handleMouseMove)
+  }, [])
+
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden" ref={containerRef}>
-      {/* Enhanced Custom Cursor */}
+      {/* Custom Cursor: Gradient Ring + Center Gradient Dot */}
       <motion.div
-        className="fixed w-6 h-6 bg-gradient-to-r from-pink-500 to-cyan-500 rounded-full pointer-events-none z-50 mix-blend-difference"
-        animate={{ x: mousePosition.x - 12, y: mousePosition.y - 12 }}
+        className="fixed pointer-events-none z-50"
+        style={{ left: 0, top: 0 }}
+        animate={{ x: mousePosition.x, y: mousePosition.y }}
         transition={{ type: "spring", stiffness: 500, damping: 28 }}
-      />
-      <motion.div
-        className="fixed w-12 h-12 border border-pink-500/30 rounded-full pointer-events-none z-50"
-        animate={{ x: mousePosition.x - 24, y: mousePosition.y - 24 }}
-        transition={{ type: "spring", stiffness: 200, damping: 20 }}
-      />
+      >
+        {/* Outer Gradient Ring - now a perfect circle with gradient border */}
+        <div
+          className="absolute left-1/2 top-1/2 w-12 h-12 rounded-full"
+          style={{
+            background: "conic-gradient(from 90deg, #ec4899, #06b6d4)",
+            WebkitMaskImage: "radial-gradient(circle at center, transparent 70%, black 71%)",
+            maskImage: "radial-gradient(circle at center, transparent 70%, black 71%)",
+            transform: "translate(-50%, -50%)"
+          }}
+        />
+        {/* Center Gradient Dot */}
+        <div
+          className="absolute left-1/2 top-1/2 w-6 h-6 rounded-full bg-gradient-to-r from-pink-500 to-cyan-500"
+          style={{ transform: "translate(-50%, -50%)" }}
+        />
+      </motion.div>
 
       {/* Enhanced Navigation */}
       <nav className="fixed top-0 w-full z-40 bg-black/90 backdrop-blur-xl border-b border-white/10">
@@ -186,7 +218,7 @@ export default function HomePage() {
               transition={{ duration: 0.5 }}
               className="flex items-center space-x-4"
             >
-               <Button variant="ghost" size="icon" className="relative group">
+              <Button variant="ghost" size="icon" className="relative group">
                 <Heart className="w-5 h-5 group-hover:text-pink-400 transition-colors" />
                 <Badge className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                   3
@@ -198,7 +230,7 @@ export default function HomePage() {
                   2
                 </Badge>
               </Button>
-              {typeof window !== "undefined" && localStorage.getItem("token") ? (
+              {isAuthenticated ? (
                 <Button
                   variant="outline"
                   className="ml-2 bg-gradient-to-r from-cyan-500 to-pink-500 text-black font-bold rounded-full px-5 py-2 hover:scale-105 transition-transform"
@@ -217,6 +249,7 @@ export default function HomePage() {
                 </Link>
               )}
             </motion.div>
+
           </div>
         </div>
       </nav>

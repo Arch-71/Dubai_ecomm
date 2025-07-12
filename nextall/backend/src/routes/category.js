@@ -6,7 +6,7 @@ const categories = require('../controllers/category');
 const verifyToken = require('../config/jwt');
 
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+
 
 router.post('/categories', verifyToken, categories.createCategory);
 

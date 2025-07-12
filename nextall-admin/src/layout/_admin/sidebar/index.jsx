@@ -75,13 +75,7 @@ export const navlinks = [
     icon: <BsCart3 />,
     isSearch: true
   },
-  {
-    id: 6,
-    title: 'Shops',
-    slug: 'shops',
-    icon: <BsBuildings />,
-    isSearch: true
-  },
+  
   {
     id: 7,
     title: 'Users',

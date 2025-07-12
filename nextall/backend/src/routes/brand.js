@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const brand = require('../controllers/brand');
-
+const cloudinary = require('../config/cloudinary');
 // Import verifyToken function
 const verifyToken = require('../config/jwt');
 

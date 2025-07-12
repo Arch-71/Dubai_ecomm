@@ -33,7 +33,9 @@ export default function AddProduct() {
   const router = useRouter();
 
   // Example options for select fields (replace with actual data as needed)
-  const shops = ['SafeMuta'];
+  const shops = [
+    { _id: '64b7e2f9d4a3c2f1e0d99999', name: 'Sacred Mayhem' }
+  ];
   const categories = ['Watches'];
   const subCategories = ['Lifestyle'];
   const brands = ['Los Angeles'];
@@ -172,7 +174,7 @@ export default function AddProduct() {
                   <FormControl fullWidth margin="normal">
                     <InputLabel id="shop-label">Shop</InputLabel>
                     <Select labelId="shop-label" id="shop-select" name="shop" value={form.shop} label="Shop" onChange={handleChange} required>
-                      {shops.map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
+                      {shops.map((shop) => <MenuItem key={shop._id} value={shop._id}>{shop.name}</MenuItem>)}
                     </Select>
                   </FormControl>
                 </Grid>

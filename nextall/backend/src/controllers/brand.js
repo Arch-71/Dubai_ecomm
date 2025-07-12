@@ -1,7 +1,7 @@
 const Brands = require('../models/Brand');
 const getBlurDataURL = require('../config/getBlurDataURL');
 const { singleFileDelete } = require('../config/uploader');
-
+const cloudinary = require('../config/cloudinary');
 const createBrand = async (req, res) => {
   try {
     const { logo, ...others } = req.body;

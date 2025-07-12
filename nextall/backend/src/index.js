@@ -99,7 +99,7 @@ app.use('/api', reviewRoutes);
 app.use('/api', wishlistRoutes);
 app.use('/admin', OrderRoutes);
 app.use('/api', paymentRoutes);
-app.use('/api', delete_fileRoutes);
+app.use('/admin', delete_fileRoutes);
 app.use('/api', shopRoutes);
 app.use('/api', payment);
 app.use('/api', currency);

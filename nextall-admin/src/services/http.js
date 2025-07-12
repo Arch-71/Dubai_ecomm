@@ -1,18 +1,27 @@
 import axios from 'axios';
 
+// Create an axios instance
 const http = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', // Set your backend URL here
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Optionally add interceptors for auth token
-// TODO: Replace this placeholder with your actual admin JWT for development
-const ADMIN_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJTT01FX0FETUlOX0lEIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUxOTA5MzkxLCJleHAiOjE3NTI1MTQxOTF9.8eF-oeLj5yL4Vp0_47D2XKyggsaVSE4ZwtB5bMecoz0';
+// Attach the JWT token to every request if present
 http.interceptors.request.use((config) => {
-  // Always use the hardcoded admin JWT for all requests
-  config.headers.Authorization = `Bearer ${ADMIN_JWT}`;
+  // Try to get the token from localStorage (preferred)
+  let token = null;
+  if (typeof window !== 'undefined') {
+    token = localStorage.getItem('token');
+  }
+  // Fallback to hardcoded token if needed (for testing)
+  if (!token) {
+    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJTT01FX0FETUlOX0lEIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyMjMxODc4LCJleHAiOjE3NTI4MzY2Nzh9.mjPiFeidencitC5jb-UQil5TMDZExtf59PBp5MRhjfc";
+  }
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
