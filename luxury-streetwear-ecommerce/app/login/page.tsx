@@ -15,20 +15,20 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    
+   
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          email, 
+        body: JSON.stringify({
+          email,
           password,
           isAdmin // Send admin flag to backend
         }),
       });
-      
+     
       const data = await res.json();
-      
+     
       if (!res.ok) {
         throw new Error(data.message || "Login failed");
       }
@@ -54,7 +54,7 @@ export default function LoginPage() {
         // Regular user redirect
         window.location.href = "/";
       }
-      
+     
     } catch (err: any) {
       setError(err.message || "Login failed. Please try again.");
       // Clear any stored data on error

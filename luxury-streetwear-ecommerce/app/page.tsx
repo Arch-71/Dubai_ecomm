@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+// ...existing code...
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,18 +20,34 @@ import {
   Zap,
   Crown,
   Flame,
-  Shield
+  Shield,
+  User
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-
+import { usePathname } from "next/navigation"
 export default function HomePage() {
+  const pathname = usePathname();
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
   const [isMuted, setIsMuted] = useState(true)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isLoaded, setIsLoaded] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const [selectedDropdown, setSelectedDropdown] = useState<string | null>(null)
+  const closeMenuTimeout = useRef<NodeJS.Timeout | null>(null)
+  const handleMenuEnter = () => {
+    if (closeMenuTimeout.current) {
+      clearTimeout(closeMenuTimeout.current)
+    }
+    setShowUserMenu(true)
+  }
+  const handleMenuLeave = () => {
+    closeMenuTimeout.current = setTimeout(() => {
+      setShowUserMenu(false)
+    }, 120)
+  }
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll()
   const y = useTransform(scrollYProgress, [0, 1], [0, -50])
@@ -180,79 +197,7 @@ export default function HomePage() {
         />
       </motion.div>
 
-      {/* Enhanced Navigation */}
-      <nav className="fixed top-0 w-full z-40 bg-black/90 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-              <Link
-                href="/"
-                className="text-2xl font-black tracking-wider bg-gradient-to-r from-pink-400 to-cyan-400 bg-clip-text text-transparent"
-              >
-                SACRED MAYHEM
-              </Link>
-            </motion.div>
-
-            <div className="hidden md:flex items-center space-x-8">
-              {["SHOP", "DROPS", "LOOKBOOK", "ARCHIVE", "EDITORIAL"].map((item, index) => (
-                <motion.div
-                  key={item}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
-                >
-                  <Link
-                    href={`/${item.toLowerCase()}`}
-                    className="relative hover:text-pink-400 transition-colors group"
-                  >
-                    {item}
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-pink-500 to-cyan-500 group-hover:w-full transition-all duration-300" />
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="flex items-center space-x-4"
-            >
-              <Button variant="ghost" size="icon" className="relative group">
-                <Heart className="w-5 h-5 group-hover:text-pink-400 transition-colors" />
-                <Badge className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                  3
-                </Badge>
-              </Button>
-              <Button variant="ghost" size="icon" className="relative group">
-                <ShoppingBag className="w-5 h-5 group-hover:text-cyan-400 transition-colors" />
-                <Badge className="absolute -top-2 -right-2 bg-cyan-500 text-black text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                  2
-                </Badge>
-              </Button>
-              {isAuthenticated ? (
-                <Button
-                  variant="outline"
-                  className="ml-2 bg-gradient-to-r from-cyan-500 to-pink-500 text-black font-bold rounded-full px-5 py-2 hover:scale-105 transition-transform"
-                  onClick={() => {
-                    localStorage.removeItem("token");
-                    window.location.reload();
-                  }}
-                >
-                  Sign Out
-                </Button>
-              ) : (
-                <Link href="/login">
-                  <Button variant="outline" className="ml-2 bg-gradient-to-r from-pink-500 to-cyan-500 text-black font-bold rounded-full px-5 py-2 hover:scale-105 transition-transform">
-                    Login / Sign Up
-                  </Button>
-                </Link>
-              )}
-            </motion.div>
-
-          </div>
-        </div>
-      </nav>
+      
 
       {/* Enhanced Hero Section */}
       <section className="relative h-screen overflow-hidden">
