@@ -40,7 +40,7 @@ export default function ProductsPage() {
   useEffect(() => {
     setLoading(true);
     import('src/services/http').then(({ default: http }) => {
-      http.get(`/admin/products?page=${page}&limit=${limit}`).then(res => {
+      http.get(`/api/products?page=${page}&limit=${limit}`).then(res => {
         setProducts(Array.isArray(res.data.data) ? res.data.data : []);
         setTotal(res.data.total || 0);
         setLoading(false);

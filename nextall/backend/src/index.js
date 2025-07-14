@@ -81,26 +81,25 @@ const compaign = require('./routes/compaign');
 
 app.use('/api', homeRoutes);
 app.use('/api', authRoutes);
-app.use('/admin', brandRoutes);
-app.use('/admin', shopRoutes);
-app.use('/admin', productRoutes);
+app.use('/api', brandRoutes);
+app.use('/api', shopRoutes);
+app.use('/api', productRoutes);
 
 app.use('/api', categoryRoutes);
 app.use('/api', subcategoryRoutes);
 app.use('/api', newsletterRoutes);
 
-app.use('/admin', dashboardRoutes);
+app.use('/api', dashboardRoutes);
 app.use('/api', searchRoutes);
-app.use('/admin', userRoutes);
+app.use('/api', userRoutes);
 app.use('/api', cartRoutes);
 app.use('/api', couponCodeRoutes);
 app.use('/api', productReviewRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api', wishlistRoutes);
-app.use('/admin', OrderRoutes);
+app.use('/api', OrderRoutes);
 app.use('/api', paymentRoutes);
-app.use('/admin', delete_fileRoutes);
-app.use('/api', shopRoutes);
+app.use('/api', delete_fileRoutes);
 app.use('/api', payment);
 app.use('/api', currency);
 app.use('/api', compaign);

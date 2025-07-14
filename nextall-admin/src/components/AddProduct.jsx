@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import http from '@/services/http';
@@ -33,12 +33,42 @@ export default function AddProduct() {
   const router = useRouter();
 
   // Example options for select fields (replace with actual data as needed)
-  const shops = [
-    { _id: '64b7e2f9d4a3c2f1e0d99999', name: 'Sacred Mayhem' }
-  ];
-  const categories = ['Watches'];
-  const subCategories = ['Lifestyle'];
-  const brands = ['Los Angeles'];
+  const [shops, setShops] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return; // Only run on client
+    async function fetchOptions() {
+      try {
+        const token = localStorage.getItem('token');
+        console.log('JWT token in AddProduct:', token); // Debug
+        if (!token) {
+          console.warn('No token found in localStorage. Not fetching options.');
+          return;
+        }
+        const headers = { 'Authorization': `Bearer ${token}` };
+        const [shopsRes, categoriesRes, subCategoriesRes, brandsRes] = await Promise.all([
+          fetch('/api/shops', { headers }).then(r => r.json()),
+          fetch('/api/categories', { headers }).then(r => r.json()),
+          fetch('/api/subcategories', { headers }).then(r => r.json()),
+          fetch('/api/brands', { headers }).then(r => r.json()),
+        ]);
+        console.log('Fetched shopsRes:', shopsRes);
+        console.log('Fetched categoriesRes:', categoriesRes);
+        console.log('Fetched subCategoriesRes:', subCategoriesRes);
+        console.log('Fetched brandsRes:', brandsRes);
+        setShops(Array.isArray(shopsRes.data) ? shopsRes.data : Array.isArray(shopsRes) ? shopsRes : []);
+        setCategories(Array.isArray(categoriesRes.data) ? categoriesRes.data : Array.isArray(categoriesRes) ? categoriesRes : []);
+        setSubCategories(Array.isArray(subCategoriesRes.data) ? subCategoriesRes.data : Array.isArray(subCategoriesRes) ? subCategoriesRes : []);
+        setBrands(Array.isArray(brandsRes.data) ? brandsRes.data : Array.isArray(brandsRes) ? brandsRes : []);
+      } catch (err) {
+        console.error('Failed to fetch options:', err);
+      }
+    }
+    fetchOptions();
+  }, []);
   const sizes = ['L', 'M', 'S'];
   const colors = ['Red', 'Blue', 'Green'];
   const genders = ['None', 'Male', 'Female', 'Unisex'];
@@ -117,7 +147,7 @@ export default function AddProduct() {
         images: uploadedImages,
       };
       await http.post(
-        '/admin/products',
+        '/api/products',
         payload
       );
       // Reset form and images
@@ -182,7 +212,7 @@ export default function AddProduct() {
                   <FormControl fullWidth margin="normal">
                     <InputLabel id="category-label">Category</InputLabel>
                     <Select labelId="category-label" id="category-select" name="category" value={form.category} label="Category" onChange={handleChange} required>
-                      {categories.map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+                      {categories.map((c) => <MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>)}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -190,7 +220,7 @@ export default function AddProduct() {
                   <FormControl fullWidth margin="normal">
                     <InputLabel id="subCategory-label">Sub Category</InputLabel>
                     <Select labelId="subCategory-label" id="subCategory-select" name="subCategory" value={form.subCategory} label="Sub Category" onChange={handleChange}>
-                      {subCategories.map((sc) => <MenuItem key={sc} value={sc}>{sc}</MenuItem>)}
+                      {subCategories.map((sc) => <MenuItem key={sc._id} value={sc._id}>{sc.name}</MenuItem>)}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -198,7 +228,7 @@ export default function AddProduct() {
                   <FormControl fullWidth margin="normal">
                     <InputLabel id="brand-label">Brand</InputLabel>
                     <Select labelId="brand-label" id="brand-select" name="brand" value={form.brand} label="Brand" onChange={handleChange}>
-                      {brands.map((b) => <MenuItem key={b} value={b}>{b}</MenuItem>)}
+                      {brands.map((b) => <MenuItem key={b._id} value={b._id}>{b.name}</MenuItem>)}
                     </Select>
                   </FormControl>
                 </Grid>
