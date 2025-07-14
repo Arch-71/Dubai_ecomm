@@ -328,35 +328,60 @@ const resetPassword = async (req, res) => {
 };
 const verifyOtp = async (req, res) => {
   try {
-    const { otp } = req.body;
-    const user = await getUser(req, res, 'not-verified');
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: 'Email and OTP are required.' });
+    }
+    const user = await User.findOne({ email });
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'User Not Found' });
+      return res.status(404).json({ success: false, message: 'User Not Found' });
     }
-    // Check if OTP has already been verified
     if (user.isVerified) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'OTP Has Already Been Verified' });
+      return res.status(400).json({ success: false, message: 'OTP Has Already Been Verified' });
     }
-
     let message = '';
-    // Verify the OTP
     if (otp === user.otp) {
       user.isVerified = true;
       await user.save();
       message = 'OTP Verified Successfully';
-      return res.status(200).json({ success: true, message });
+      // Generate JWT token for direct login
+      const token = jwt.sign(
+        {
+          _id: user._id,
+          email: user.email,
+          role: user.role
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+      return res.status(200).json({
+        success: true,
+        message,
+        token,
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          cover: user.cover,
+          gender: user.gender,
+          phone: user.phone,
+          address: user.address,
+          city: user.city,
+          country: user.country,
+          zip: user.zip,
+          state: user.state,
+          about: user.about,
+          role: user.role,
+          wishlist: user.wishlist,
+        }
+      });
     } else {
       message = 'Invalid OTP';
       return res.status(400).json({ success: false, message });
     }
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal Server Error' });
+    return res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 
